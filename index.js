@@ -58,4 +58,3 @@
       updateUserDataDisplay(userString);
     });
 
-    
