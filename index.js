@@ -1,31 +1,61 @@
-  // Function to handle form submission
-  function handleSubmit(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
+    // Function to update the form fields with stored user data
+    function updateFormWithUserData(userData) {
+      if (userData) {
+        const { name, email, phoneNumber } = JSON.parse(userData);
+        document.getElementById("name").value = name;
+        document.getElementById("email").value = email;
+        document.getElementById("phoneNumber").value = phoneNumber;
+      }
+    }
 
-    // Get the input values
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
+    // Function to update the user data display
+    function updateUserDataDisplay(userData) {
+      if (userData) {
+        const { name, email, phoneNumber } = JSON.parse(userData);
+        const userDataDisplay = document.getElementById("userDataDisplay");
+        userDataDisplay.innerHTML = `
+          <h2>User Data:</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Phone Number:</strong> ${phoneNumber}</p>
+        `;
+      }
+    }
 
-    // Create an object to store the user details
-    const userDetails = {
-      name: name,
-      email: email,
-      // Add more properties if you have additional input fields
-    } ;
+    // Load stored user data when the page loads
+    document.addEventListener("DOMContentLoaded", function () {
+      const userData = localStorage.getItem("userData");
+      updateFormWithUserData(userData);
+      updateUserDataDisplay(userData);
+    });
 
-    // Convert the object to a JSON string
-    const userDetailsJSON = JSON.stringify(userDetails);
+    // Add an event listener to the form for form submission
+    document.getElementById("userForm").addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent form submission to avoid page reload
 
-    // Store the JSON string in local storage with a unique key (e.g., "userDetails")
-    localStorage.setItem('userDetails', userDetailsJSON);
+      // Get the user details from the form
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const phoneNumber = document.getElementById("phoneNumber").value;
 
-    // Optionally, you can provide some feedback to the user that the details have been stored
-    alert('Details have been stored in the local storage.');
+      // Create an object to hold the user details
+      const user = {
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber
+      };
 
-    // Optionally, you can reset the form after submission
-    event.target.reset();
-  }
-  
-  //Add an event listener to the form for form submission
-  const userForm = document.getElementById('userForm');
-  userForm.addEventListener('submit', handleSubmit);
+      // Convert the user object to a JSON string
+      const userString = JSON.stringify(user);
+
+      // Save the user details in local storage with a key "userData"
+      localStorage.setItem("userData", userString);
+
+      // Update the form with the stored user data
+      updateFormWithUserData(userString);
+
+      // Update the user data display
+      updateUserDataDisplay(userString);
+    });
+
+    
