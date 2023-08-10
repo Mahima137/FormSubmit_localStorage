@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function() {
   // Replace 'API_ENDPOINT' with the actual API endpoint from crudcrud
   const apiEndpoint = 'https://crudcrud.com/api/d3ec33daee9340d9a343b6b890908dfd/appointmentData';
@@ -32,4 +33,30 @@ function generateUserListHTML(userList) {
     `;
   });
   return html;
+}
+function deleteUser(userId) {
+  // Replace 'API_ENDPOINT' with the actual API endpoint from crudcrud
+  const apiEndpoint = `API_ENDPOINT/${userId}`;
+
+  fetch(apiEndpoint, {
+    method: 'DELETE'
+  })
+    .then(response => {
+      if (response.ok) {
+        // Remove the user detail from the website
+        removeUserFromUI(userId);
+      } else {
+        console.error('Error deleting user:', response.status);
+      }
+    })
+    .catch(error => {
+      console.error('Error deleting user:', error);
+    });
+}
+
+function removeUserFromUI(userId) {
+  const userDiv = document.querySelector(`[data-user-id="${userId}"]`);
+  if (userDiv) {
+    userDiv.remove();
+  }
 }
