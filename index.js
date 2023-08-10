@@ -60,3 +60,16 @@ function removeUserFromUI(userId) {
     userDiv.remove();
   }
 }
+
+
+function editUser(userId) {
+  const userData = JSON.parse(localStorage.getItem(userId));
+
+  const nameField = document.getElementById("name");
+  const emailField = document.getElementById("email");
+  const phoneNumberField = document.getElementById("phoneNumber");
+
+  nameField.value = userData.name;
+  emailField.value = userData.email;
+  phoneNumberField.value = userData.phoneNumber;
+}
