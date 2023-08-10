@@ -1,60 +1,70 @@
-    // Function to update the form fields with stored user data
-    function updateFormWithUserData(userData) {
-      if (userData) {
-        const { name, email, phoneNumber } = JSON.parse(userData);
-        document.getElementById("name").value = name;
-        document.getElementById("email").value = email;
-        document.getElementById("phoneNumber").value = phoneNumber;
-      }
-    }
+document.getElementById("userForm").addEventListener("submit", function(event) {
+  event.preventDefault();
 
-    // Function to update the user data display
-    function updateUserDataDisplay(userData) {
-      if (userData) {
-        const { name, email, phoneNumber } = JSON.parse(userData);
-        const userDataDisplay = document.getElementById("userDataDisplay");
-        userDataDisplay.innerHTML = `
-          <h2>User Data:</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone Number:</strong> ${phoneNumber}</p>
-        `;
-      }
-    }
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const phoneNumber = document.getElementById("phoneNumber").value;
 
-    // Load stored user data when the page loads
-    document.addEventListener("DOMContentLoaded", function () {
-      const userData = localStorage.getItem("userData");
-      updateFormWithUserData(userData);
-      updateUserDataDisplay(userData);
-    });
+  const userData = {
+    name: name,
+    email: email,
+    phoneNumber: phoneNumber
+  };
 
-    // Add an event listener to the form for form submission
-    document.getElementById("userForm").addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent form submission to avoid page reload
+  // Generate a unique key for the user data based on their email or some other criteria
+  const userKey = email; // You can use a different key generation mechanism if needed
 
-      // Get the user details from the form
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const phoneNumber = document.getElementById("phoneNumber").value;
+  //localStorage.setItem(userKey, JSON.stringify(userData));
+  axios.post("https://crudcrud.com/api/d3ec33daee9340d9a343b6b890908dfd/AppointmentData", obj)
+    .then((response) => {
+      console.log(response)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  const userDataDisplay = document.getElementById("userDataDisplay");
+  userDataDisplay.innerHTML = generateUserListHTML();
+});
 
-      // Create an object to hold the user details
-      const user = {
-        name: name,
-        email: email,
-        phoneNumber: phoneNumber
-      };
+const userDataDisplay = document.getElementById("userDataDisplay");
+userDataDisplay.innerHTML = generateUserListHTML();
 
-      // Convert the user object to a JSON string
-      const userString = JSON.stringify(user);
+function generateUserListHTML() {
+  let html = "<h2></h2>";
+  
+  // Loop through local storage and retrieve each user's data
+  for (let i = 0; i < localStorage.length; i++) {
+    const userKey = localStorage.key(i);
+    const userData = JSON.parse(localStorage.getItem(userKey));
 
-      // Save the user details in local storage with a key "userData"
-      localStorage.setItem("userData", userString);
+    html += `
+      <div class="user">
+        <p><strong>Name:</strong> ${userData.name}</p>
+        <p><strong>Email:</strong> ${userData.email}</p>
+        <p><strong>Phone Number:</strong> ${userData.phoneNumber}</p>
+        <button onclick="editUser('${userKey}')">Edit</button>
+        <button onclick="removeUser('${userKey}')">Remove</button>
+      </div>
+    `;
+  }
+  
+  return html;
+}
 
-      // Update the form with the stored user data
-      updateFormWithUserData(userString);
+function editUser(userKey) {
+  const userData = JSON.parse(localStorage.getItem(userKey));
 
-      // Update the user data display
-      updateUserDataDisplay(userString);
-    });
+  const nameField = document.getElementById("name");
+  const emailField = document.getElementById("email");
+  const phoneNumberField = document.getElementById("phoneNumber");
 
+  nameField.value = userData.name;
+  emailField.value = userData.email;
+  phoneNumberField.value = userData.phoneNumber;
+}
+
+function removeUser(userKey) {
+  localStorage.removeItem(userKey);
+  const userDataDisplay = document.getElementById("userDataDisplay");
+  userDataDisplay.innerHTML = generateUserListHTML();
+}
